@@ -2,11 +2,11 @@
 
 Discord 기반 AI Control Room 프로젝트의 공개 포트폴리오 문서입니다.
 
-Production source code is private. 이 프로젝트는 운영용 workflow, 배포 설정, credential 연동 지점, private automation logic을 포함하기 때문에 실제 소스코드는 공개하지 않고, 이 저장소에는 아키텍처와 구현 의사결정, 회고, 스크린샷만 정리합니다.
+실제 운영 코드는 비공개입니다. 이 저장소는 프로젝트 구조, 구현 의사결정, 회고, 스크린샷을 정리한 포트폴리오용 문서 저장소입니다.
 
 ## Overview / 프로젝트 개요
 
-Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔드가 AI workflow 실행과 상태 관리를 소유하는 local-first orchestration 프로젝트입니다.
+Control Room은 Discord 채팅방을 조작 화면처럼 사용해 여러 AI 역할이 대화하고, 필요한 설정과 실행 상태는 로컬 웹 콘솔에서 관리하는 프로젝트입니다.
 
 초기 목표는 **Discord를 통해 외부에서 내 로컬 PC의 AI에게 작업을 지시하는 control room**을 만드는 것이었습니다. 예를 들어 모바일 Discord에서 명령을 보내면, 집이나 작업 PC에 떠 있는 로컬 runner가 AI/CLI 작업을 수행하는 구조를 상정했습니다.
 
@@ -16,7 +16,7 @@ Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔
 
 처음에는 Discord를 단순 채팅 UI가 아니라, 언제 어디서든 접근 가능한 remote command surface로 보고 출발했습니다. 웹 대시보드를 직접 열지 않아도 모바일에서 명령을 보내고, 로컬 PC에서 실행되는 AI runtime이 작업을 이어받는 구조를 만들고 싶었습니다.
 
-이후 프로젝트 방향은 바뀌었습니다. 로컬 CLI 제어는 외부 도구들이 더 빠르게 성숙했기 때문에 직접 구현 우선순위에서 내려놓았고, 대신 이미 만들어둔 Discord ingress, room 설정, prompt compilation, cycle state, model profile 구조를 활용해 **멀티롤 AI 토론 봇**으로 발전시키는 편이 더 의미 있다고 판단했습니다.
+이후 프로젝트 방향은 바뀌었습니다. 로컬 CLI 제어는 외부 도구들이 더 빠르게 성숙했기 때문에 직접 구현 우선순위에서 내려놓았고, 대신 이미 만들어둔 Discord 연동, 방 설정, 프롬프트 조립, 모델 설정 구조를 활용해 **멀티롤 AI 토론 봇**으로 발전시키는 편이 더 의미 있다고 판단했습니다.
 
 이 과정에서 단순한 챗봇보다 중요한 것은 다음이었습니다.
 
@@ -36,7 +36,7 @@ Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔
 
 ![Discord conversation preview](assets/screenshots/discord-conversation-preview.png)
 
-Discord는 이 프로젝트의 main interaction surface입니다. 사용자는 일반 채팅처럼 메시지를 보내고, 백엔드는 채널 메시지를 기록한 뒤 cycle state와 agent role에 따라 여러 AI 캐릭터/역할의 응답을 조율합니다.
+Discord는 이 프로젝트의 주 사용 화면입니다. 사용자는 일반 채팅처럼 메시지를 보내고, 백엔드는 대화 흐름을 기록한 뒤 어떤 AI 역할이 다음에 말할지 조율합니다.
 
 ## Screenshots
 
@@ -82,17 +82,17 @@ flowchart LR
   RunnerApp --> Runner
 ```
 
-백엔드는 durable state, Discord message recording, channel cycle gating, prompt compilation, model/tool resolution, secret masking, graph execution, trace snapshot을 소유합니다. 프론트엔드는 실행 주체가 아니라 설정 편집과 상태 확인을 위한 operator console입니다. runner boundary는 로컬 실행 기능을 브라우저와 분리하기 위한 경계로 설계했습니다.
+역할은 단순하게 나눴습니다. Discord는 사용자가 말을 거는 화면이고, 백엔드는 대화를 기록하고 다음 응답을 만들기 위한 판단을 담당합니다. 프론트엔드는 AI 역할, 모델, 프롬프트, 실행 상태를 관리하는 콘솔이며, 러너는 로컬 PC에서 필요한 실행 환경을 켜고 확인하는 경계입니다.
 
 ## Components / 구성 요소
 
 | Component | Role |
 | --- | --- |
-| Discord Ingress | Discord 메시지를 수신하고 bot/out-of-scope 메시지를 필터링한 뒤 백엔드에 기록합니다. |
-| Backend API | 상태, secret reference, channel cycle, graph run, prompt compilation, model call, sanitized trace를 소유합니다. |
-| Frontend Console | room/prompt/model 설정, prompt preview, workflow/run 시각화, 수동 점검 화면을 제공합니다. |
-| Runner API | 로컬 실행 경계와 readiness check를 제공합니다. CLI 제어는 현재 핵심 범위에서 제외되었습니다. |
-| Runner App | Docker stack, frontend console, runner API 상태를 확인하는 Windows launcher/status app입니다. |
+| Discord Ingress | Discord 메시지를 받아 백엔드에 전달합니다. |
+| Backend API | 대화 상태를 저장하고, 다음 응답을 만들기 위한 판단과 기록을 담당합니다. |
+| Frontend Console | AI 역할, 모델, 프롬프트, 시크릿 상태를 관리하고 실행 결과를 확인합니다. |
+| Runner API | 로컬 PC에서 실행해야 하는 기능을 백엔드와 분리합니다. CLI 제어는 현재 핵심 범위에서 제외되었습니다. |
+| Runner App | Docker stack과 로컬 콘솔 상태를 켜고 확인하는 Windows 앱입니다. |
 
 자세한 내용: [Component Responsibilities](docs/components.md)
 
@@ -100,7 +100,7 @@ flowchart LR
 
 초기 구현은 n8n과 Activepieces로 시작했습니다. 백엔드를 직접 구축하는 것보다 workflow engine을 다루는 쪽이 익숙했고, 시각적으로 노드를 연결하면서 Discord, HTTP request, model call, branch logic을 빠르게 검증할 수 있었기 때문입니다.
 
-하지만 channel cycle, user interruption, stale callback, prompt compilation, secret reference, trace snapshot 같은 요구사항이 늘어나면서 workflow tool 안에 핵심 로직을 계속 두는 것이 오히려 불편해졌습니다. AI coding 도구가 발전하면서 TypeScript 백엔드를 직접 구축하는 비용도 낮아졌고, 결국 실행 권한과 상태 관리를 백엔드 코드로 옮기는 방향을 선택했습니다.
+하지만 대화 상태 관리, 사용자 개입 처리, 프롬프트 조립, 시크릿 관리, 실행 기록처럼 세밀하게 다뤄야 할 부분이 늘어나면서 workflow tool 안에 핵심 로직을 계속 두는 것이 오히려 불편해졌습니다. AI coding 도구가 발전하면서 TypeScript 백엔드를 직접 구축하는 비용도 낮아졌고, 결국 실행 권한과 상태 관리를 백엔드 코드로 옮기는 방향을 선택했습니다.
 
 자세한 내용: [Migration From n8n and Activepieces](docs/migration-from-workflow-tools.md)
 
