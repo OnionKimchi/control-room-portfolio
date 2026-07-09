@@ -27,6 +27,12 @@ The project uses secret references in configuration and traces. Public documenta
 
 Actual secret values should never appear in screenshots, logs, traces, prompts, or public docs.
 
+![Secret references](../assets/screenshots/secret-references.png)
+
+The frontend stores and displays secret references, descriptions, and configured/empty status. It does not need to display the actual secret value after configuration. AI tools should only receive placeholders such as `{{secret.GEMINI_API_KEY_TIER1}}`; the backend resolves the real value only at runtime.
+
+This boundary matters because model profiles, Discord bot credentials, and webhook URLs are operational secrets. They can be referenced by configuration, prompt compilation, and workflow traces without exposing the underlying key.
+
 ## Screenshot Checklist
 
 Before adding screenshots to this repository:
