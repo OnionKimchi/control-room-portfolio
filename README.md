@@ -26,6 +26,12 @@ Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔
 - assistant agent들이 각자의 역할과 context에 맞게 응답하는 것
 - 실행 흐름과 prompt, model call, branch decision을 나중에 추적할 수 있게 만드는 것
 
+## Local-first Deployment / 로컬 우선 실행 방식
+
+이 프로젝트는 처음부터 상시 공개 웹서비스보다 **필요할 때 내 PC에서 Docker stack을 구동하는 방식**을 우선했습니다. 별도 도메인을 구매하거나 클라우드 서버를 항상 켜둘 필요가 없고, 개인용 AI control room에 필요한 비용과 운영 부담을 줄일 수 있기 때문입니다.
+
+동시에 Docker 기반으로 구성했기 때문에 로컬 전용 구조에만 갇히지는 않습니다. 장기적으로는 같은 backend, frontend, runner 구성을 클라우드 VM이나 컨테이너 환경으로 옮겨 상시 실행 서비스처럼 운영할 수 있는 여지를 남겼습니다.
+
 ## Screenshots
 
 스크린샷은 문서 작업을 진행하면서 필요한 시점에 추가합니다.
