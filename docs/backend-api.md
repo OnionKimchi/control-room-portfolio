@@ -71,6 +71,8 @@ prompt는 frontend에서 문자열을 조립하지 않습니다. backend가 room
 
 Conductor prompt는 다음 발화자와 cycle 지속 여부를 결정하기 위한 정보를 포함합니다. Assistant prompt는 자기 역할과 대화 history를 중심으로 구성하고, conductor-only 정보는 일반 assistant에게 넘기지 않습니다.
 
+자세한 prompt fragment와 compile 구조는 [Prompt Assembly](prompt-assembly.md) 문서에서 다룹니다.
+
 ## Secret handling
 
 공개 가능한 설정과 실제 secret value를 분리했습니다. 예를 들어 설정에는 다음과 같은 reference만 남깁니다.

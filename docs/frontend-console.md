@@ -36,6 +36,7 @@ Frontend Console은 사용자가 backend 상태를 다루기 쉽게 만드는 la
 | Agent management | agent별 이름, 역할, instruction, model profile 지정 |
 | Persona editing | agent별 base/private description과 avatar metadata 관리 |
 | Prompt preview | backend가 compile한 conductor/assistant prompt를 read-only로 확인 |
+| Prompt fragments | conductor/assistant role instruction과 prompt footer 관리 |
 | Model/tool assignment | room 또는 agent에 model profile과 tool catalog 항목 연결 |
 | Model profile editing | provider, model name, request parameter, API key secret reference 관리 |
 | Workflow visualization | backend-owned workflow definition을 시각화 |
@@ -56,3 +57,5 @@ Frontend Console은 사용자가 backend 상태를 다루기 쉽게 만드는 la
 ## 포트폴리오에서 보여주려는 점
 
 Frontend Console 문서는 이 프로젝트가 Discord 채팅 화면만 있는 것이 아니라, 운영자가 system state와 workflow execution을 검사할 수 있는 관리 화면까지 고려했다는 점을 보여줍니다.
+
+Prompt 조립 구조는 [Prompt Assembly](prompt-assembly.md) 문서에서 별도로 설명합니다.
