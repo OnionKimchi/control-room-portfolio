@@ -1,37 +1,42 @@
 # Control Room
 
-Public technical case study for a private Discord-based AI control room project.
+Discord 기반 AI Control Room 프로젝트의 공개 포트폴리오 문서입니다.
 
-The production source code is intentionally private because the project includes operational workflow details, deployment configuration, credential integration points, and private automation logic. This repository documents the architecture, component responsibilities, migration decisions, and selected screenshots.
+Production source code is private. 이 프로젝트는 운영용 workflow, 배포 설정, credential 연동 지점, private automation logic을 포함하기 때문에 실제 소스코드는 공개하지 않고, 이 저장소에는 아키텍처와 구현 의사결정, 회고, 스크린샷만 정리합니다.
 
-## Overview
+## Overview / 프로젝트 개요
 
-Control Room is a local-first orchestration system for coordinating Discord conversation ingress, backend-owned AI workflow execution, a frontend operator console, and a local runner boundary.
+Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔드가 AI workflow 실행과 상태 관리를 소유하는 local-first orchestration 프로젝트입니다.
 
-The project started from workflow-tool prototypes and moved toward a backend-owned TypeScript runtime. The goal was to keep workflow visibility while making state, branching, secret handling, prompt compilation, and runtime execution explicit in code.
+초기 목표는 **Discord를 통해 외부에서 내 로컬 PC의 AI에게 작업을 지시하는 control room**을 만드는 것이었습니다. 예를 들어 모바일 Discord에서 명령을 보내면, 집이나 작업 PC에 떠 있는 로컬 runner가 AI/CLI 작업을 수행하는 구조를 상정했습니다.
 
-## Why I Built It
+다만 제작 도중 Codex Desktop 같은 대기업 도구들이 로컬 PC의 코딩 작업을 더 안정적으로 원격 지시할 수 있는 방향으로 발전하면서, 이 프로젝트에서 CLI 제어 기능을 계속 밀고 가는 실익은 줄어들었습니다. 그래서 CLI control 기능은 핵심 범위에서 제외하고, 프로젝트를 폐기하는 대신 **Discord 안에서 여러 역할의 AI agent가 멀티턴으로 토론하고 응답하는 시스템**에 집중하기로 방향을 전환했습니다.
 
-TBD with project motivation from the author.
+## Why I Built It / 만든 이유
 
-Questions to answer before finalizing this section:
+처음에는 Discord를 단순 채팅 UI가 아니라, 언제 어디서든 접근 가능한 remote command surface로 보고 출발했습니다. 웹 대시보드를 직접 열지 않아도 모바일에서 명령을 보내고, 로컬 PC에서 실행되는 AI runtime이 작업을 이어받는 구조를 만들고 싶었습니다.
 
-- What problem were you personally trying to solve?
-- Who was expected to use the control room: only you, a team, or future operators?
-- What did Discord provide that a normal web UI did not?
-- What was the first moment when n8n or Activepieces stopped being enough?
+이후 프로젝트 방향은 바뀌었습니다. 로컬 CLI 제어는 외부 도구들이 더 빠르게 성숙했기 때문에 직접 구현 우선순위에서 내려놓았고, 대신 이미 만들어둔 Discord ingress, room 설정, prompt compilation, cycle state, model profile 구조를 활용해 **멀티롤 AI 토론 봇**으로 발전시키는 편이 더 의미 있다고 판단했습니다.
+
+이 과정에서 단순한 챗봇보다 중요한 것은 다음이었습니다.
+
+- Discord 메시지를 안정적으로 수집하고 기록하는 것
+- 한 채널에서 동시에 여러 cycle이 충돌하지 않게 관리하는 것
+- conductor 역할의 agent가 다음 발화자와 대화 지속 여부를 결정하는 것
+- assistant agent들이 각자의 역할과 context에 맞게 응답하는 것
+- 실행 흐름과 prompt, model call, branch decision을 나중에 추적할 수 있게 만드는 것
 
 ## Screenshots
 
-Screenshots will be added as the public case study is assembled.
+스크린샷은 문서 작업을 진행하면서 필요한 시점에 추가합니다.
 
 | Area | Planned asset | Purpose |
 | --- | --- | --- |
-| Discord control room | `assets/screenshots/discord-control-room.png` | Shows the user-facing command and conversation surface. |
-| Frontend console | `assets/screenshots/frontend-console.png` | Shows monitoring, configuration, and run visibility. |
-| Runner app | `assets/screenshots/runner-app.png` | Shows local operation of Docker stack, console, and runner boundary. |
+| Discord control room | `assets/screenshots/discord-control-room.png` | 사용자 명령과 멀티턴 대화가 일어나는 화면 |
+| Frontend console | `assets/screenshots/frontend-console.png` | room, prompt, model, workflow/run 상태를 보는 운영 콘솔 |
+| Runner app | `assets/screenshots/runner-app.png` | 로컬 Docker stack, console, runner 상태를 보는 Windows 앱 |
 
-## Architecture
+## Architecture / 아키텍처
 
 ```mermaid
 flowchart LR
@@ -46,25 +51,27 @@ flowchart LR
   RunnerApp --> Runner
 ```
 
-The backend owns durable state, Discord message recording, channel cycle gating, prompt compilation, model/tool resolution, secret masking, graph execution, and trace snapshots. The frontend is an operator console for editing configuration and inspecting runtime state. The runner boundary isolates local execution from the web console and backend API.
+백엔드는 durable state, Discord message recording, channel cycle gating, prompt compilation, model/tool resolution, secret masking, graph execution, trace snapshot을 소유합니다. 프론트엔드는 실행 주체가 아니라 설정 편집과 상태 확인을 위한 operator console입니다. runner boundary는 로컬 실행 기능을 브라우저와 분리하기 위한 경계로 설계했습니다.
 
-## Components
+## Components / 구성 요소
 
 | Component | Role |
 | --- | --- |
-| Discord Ingress | Receives Discord messages, filters bot/out-of-scope messages, normalizes payloads, and records them through the backend. |
-| Backend API | Owns state, secrets, channel cycles, graph runs, prompt compilation, model calls, and sanitized traces. |
-| Frontend Console | Provides configuration editing, prompt previews, workflow/run visualization, and manual inspection. |
-| Runner API | Provides a local execution boundary for tool calls and readiness checks. |
-| Runner App | Windows desktop launcher/status panel for local Docker stack, frontend console, and runner API. |
+| Discord Ingress | Discord 메시지를 수신하고 bot/out-of-scope 메시지를 필터링한 뒤 백엔드에 기록합니다. |
+| Backend API | 상태, secret reference, channel cycle, graph run, prompt compilation, model call, sanitized trace를 소유합니다. |
+| Frontend Console | room/prompt/model 설정, prompt preview, workflow/run 시각화, 수동 점검 화면을 제공합니다. |
+| Runner API | 로컬 실행 경계와 readiness check를 제공합니다. CLI 제어는 현재 핵심 범위에서 제외되었습니다. |
+| Runner App | Docker stack, frontend console, runner API 상태를 확인하는 Windows launcher/status app입니다. |
 
-More detail: [Component Responsibilities](docs/components.md)
+자세한 내용: [Component Responsibilities](docs/components.md)
 
-## Migration From Workflow Tools
+## Migration From Workflow Tools / n8n, Activepieces에서 전환한 이유
 
-The project initially explored n8n and Activepieces because they made workflow shape and step-by-step execution easy to see. As the control logic became more stateful, the runtime moved to a backend-owned graph runner so channel cycles, stale callbacks, interruptions, secret references, and trace snapshots could be modeled directly.
+초기 구현은 n8n과 Activepieces로 시작했습니다. 백엔드를 직접 구축하는 것보다 workflow engine을 다루는 쪽이 익숙했고, 시각적으로 노드를 연결하면서 Discord, HTTP request, model call, branch logic을 빠르게 검증할 수 있었기 때문입니다.
 
-More detail: [Migration From n8n and Activepieces](docs/migration-from-workflow-tools.md)
+하지만 channel cycle, user interruption, stale callback, prompt compilation, secret reference, trace snapshot 같은 요구사항이 늘어나면서 workflow tool 안에 핵심 로직을 계속 두는 것이 오히려 불편해졌습니다. AI coding 도구가 발전하면서 TypeScript 백엔드를 직접 구축하는 비용도 낮아졌고, 결국 실행 권한과 상태 관리를 백엔드 코드로 옮기는 방향을 선택했습니다.
+
+자세한 내용: [Migration From n8n and Activepieces](docs/migration-from-workflow-tools.md)
 
 ## Case Study Docs
 
@@ -74,6 +81,6 @@ More detail: [Migration From n8n and Activepieces](docs/migration-from-workflow-
 - [Retrospective](docs/retrospective.md)
 - [Security Notes](docs/security-notes.md)
 
-## Repository Scope
+## Repository Scope / 공개 범위
 
-This repository is documentation-only. It does not include production source code, credentials, workflow exports, deployment configuration, private prompts, Discord identifiers, webhook URLs, or environment files.
+이 저장소는 documentation-only portfolio repository입니다. 실제 production source code, credentials, workflow exports, deployment configuration, private prompts, Discord identifiers, webhook URLs, environment files는 포함하지 않습니다.
