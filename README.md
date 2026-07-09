@@ -32,13 +32,19 @@ Control Room은 Discord를 명령/대화 인터페이스로 사용하고, 백엔
 
 동시에 Docker 기반으로 구성했기 때문에 로컬 전용 구조에만 갇히지는 않습니다. 장기적으로는 같은 backend, frontend, runner 구성을 클라우드 VM이나 컨테이너 환경으로 옮겨 상시 실행 서비스처럼 운영할 수 있는 여지를 남겼습니다.
 
+## Preview / Discord 대화 화면
+
+![Discord conversation preview](assets/screenshots/discord-conversation-preview.png)
+
+Discord는 이 프로젝트의 main interaction surface입니다. 사용자는 일반 채팅처럼 메시지를 보내고, 백엔드는 채널 메시지를 기록한 뒤 cycle state와 agent role에 따라 여러 AI 캐릭터/역할의 응답을 조율합니다.
+
 ## Screenshots
 
 스크린샷은 문서 작업을 진행하면서 필요한 시점에 추가합니다.
 
 | Area | Planned asset | Purpose |
 | --- | --- | --- |
-| Discord control room | `assets/screenshots/discord-control-room.png` | 사용자 명령과 멀티턴 대화가 일어나는 화면 |
+| Discord control room | `assets/screenshots/discord-conversation-preview.png` | 사용자 명령과 멀티턴 대화가 일어나는 화면 |
 | Frontend console | `assets/screenshots/frontend-console.png` | room, prompt, model, workflow/run 상태를 보는 운영 콘솔 |
 | Runner app | `assets/screenshots/runner-app.png` | 로컬 Docker stack, console, runner 상태를 보는 Windows 앱 |
 
@@ -83,6 +89,7 @@ flowchart LR
 
 - [Architecture](docs/architecture.md)
 - [Component Responsibilities](docs/components.md)
+- [Discord Control Room](docs/discord-control-room.md)
 - [Migration From n8n and Activepieces](docs/migration-from-workflow-tools.md)
 - [Retrospective](docs/retrospective.md)
 - [Security Notes](docs/security-notes.md)
