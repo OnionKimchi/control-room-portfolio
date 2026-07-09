@@ -2,19 +2,11 @@
 
 Runner App은 로컬 PC에서 Control Room runtime을 쉽게 확인하고 실행하기 위한 Windows desktop utility입니다.
 
-## Screenshot needed
+## Screenshot
 
-Planned asset:
+![Runner app](../assets/screenshots/runner-app.png)
 
-```text
-assets/screenshots/runner-app.png
-```
-
-필요한 스크린샷:
-
-- Control Room Runner 창 전체
-- Docker Engine, Backend Stack, Frontend Console, Runner API 상태가 보이는 화면
-- 가능하면 상태 label이 읽히도록 확대된 캡처
+이 화면은 Docker Engine, Backend Stack, Frontend Console, Runner API의 상태를 한 곳에서 확인하는 local operation panel입니다.
 
 ## 역할
 

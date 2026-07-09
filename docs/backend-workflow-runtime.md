@@ -2,19 +2,11 @@
 
 이 문서에서 말하는 workflow runtime은 n8n이나 Activepieces 같은 외부 workflow tool이 아니라, backend 내부에 직접 구현한 node graph 실행 구조입니다.
 
-## Screenshot needed
+## Screenshot
 
-Planned asset:
+![Workflow debugger](../assets/screenshots/workflow-run-trace.png)
 
-```text
-assets/diagrams/backend-workflow-runtime.png
-```
-
-필요한 이미지:
-
-- Discord message가 backend run으로 들어오는 흐름
-- conductor node, assistant node, branch decision, post-to-discord node가 이어지는 graph
-- 각 node 실행 결과가 trace로 저장되는 구조
+이 workflow debugger는 backend contract와 trace API에서 렌더링한 화면입니다. backend logic을 node object와 data transfer 단위로 쪼개어 보여주기 때문에, 백엔드 내부 구현에 익숙하지 않은 개발자도 n8n/Activepieces 같은 workflow engine을 보는 감각으로 실행 흐름을 추적할 수 있습니다.
 
 ## 왜 필요했나
 
@@ -29,6 +21,8 @@ assets/diagrams/backend-workflow-runtime.png
 
 그래서 외부 workflow runtime 대신, backend가 workflow definition과 execution authority를 직접 소유하도록 구조를 바꿨습니다.
 
+이때 목표는 backend를 감추는 것이 아니라, backend 내부의 실행 흐름을 다시 시각화하는 것이었습니다. 즉 실행 권한은 code-owned backend가 갖고, debugging experience는 workflow tool처럼 노드와 trace 중심으로 제공하는 구조를 지향했습니다.
+
 ## 핵심 개념
 
 | Concept | 설명 |
@@ -39,6 +33,7 @@ assets/diagrams/backend-workflow-runtime.png
 | Run | 특정 Discord message/cycle에서 시작된 workflow 실행 |
 | Trace | 각 node의 상태, sanitized input/output, timing, error, selected branch 기록 |
 | Cycle | Discord channel 단위의 대화 진행 상태 |
+| Data transfer | node 사이를 이동하는 typed payload와 sanitized DTO |
 
 ## 대표 실행 흐름
 
@@ -73,3 +68,5 @@ flowchart TD
 ## 포트폴리오에서 보여주려는 점
 
 이 문서는 프로젝트가 단순 Discord bot이 아니라, conversation workflow를 backend가 직접 실행하고 추적하는 orchestration system이라는 점을 보여주기 위한 문서입니다.
+
+특히 백엔드 코드를 직접 따라가지 않아도 현재 run, visible nodes, successful/error nodes, data transfers를 통해 어느 단계에서 어떤 payload가 이동했는지 확인할 수 있다는 점을 강조합니다.

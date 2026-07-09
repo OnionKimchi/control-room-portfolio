@@ -2,19 +2,11 @@
 
 Frontend Console은 Control Room의 operator UI입니다. 실행 권한을 갖는 runtime이 아니라, backend state와 run trace를 편집/검사하는 도구입니다.
 
-## Screenshot needed
+## Screenshot
 
-Planned asset:
+![Frontend console](../assets/screenshots/frontend-console.png)
 
-```text
-assets/screenshots/frontend-console.png
-```
-
-필요한 스크린샷:
-
-- room/agent/model/prompt 설정 화면
-- workflow/run 또는 node trace를 볼 수 있는 화면
-- secret 값은 보이지 않고 configured/missing 상태만 보이는 화면
+이 화면은 여러 AI agent 중 하나의 prompt/persona 상태가 frontend console에서 관리되는 모습을 보여줍니다. agent roster, base/private description, avatar image, enabled 상태처럼 Discord 대화에 반영되는 설정을 운영자가 직접 확인하고 수정할 수 있습니다.
 
 ## 역할
 
@@ -26,6 +18,7 @@ Frontend Console은 사용자가 backend 상태를 다루기 쉽게 만드는 la
 | --- | --- |
 | Room configuration | room context, participant, role, max turn, channel binding 설정 |
 | Agent management | agent별 이름, 역할, instruction, model profile 지정 |
+| Persona editing | agent별 base/private description과 avatar metadata 관리 |
 | Prompt preview | backend가 compile한 conductor/assistant prompt를 read-only로 확인 |
 | Model/tool assignment | room 또는 agent에 model profile과 tool catalog 항목 연결 |
 | Workflow visualization | backend-owned workflow definition을 시각화 |
